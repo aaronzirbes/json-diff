@@ -7,17 +7,21 @@ class JsonDiff {
 
     ChangeType changeType
     String field
-    String value
+    Object value
 
     JsonDiff() { }
 
     JsonDiff(ChangeType changeType,
              String field,
-             String value) {
+             Object value) {
         this.changeType = changeType
         this.field = field
         this.value = value
     }
+
+    boolean isAdd() { changeType == ChangeType.ADD }
+
+    boolean isRemove() { changeType == ChangeType.REMOVE }
 
     @Override
     String toString() {
@@ -25,6 +29,7 @@ class JsonDiff {
     }
 
     static enum ChangeType {
+
         ADD('+'),
         REMOVE('-')
 

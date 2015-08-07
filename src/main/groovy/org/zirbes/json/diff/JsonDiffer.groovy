@@ -2,11 +2,14 @@ package org.zirbes.json.diff
 
 import groovy.transform.CompileStatic
 
+import static org.zirbes.json.diff.JsonDiff.ChangeType.*
+
 @CompileStatic
 class JsonDiffer {
 
-    static List<JsonDiff> diff(Map prev, Map current) {
-        List<JsonDiff> changes = []
+    static ChangeSet diff(Map prev, Map current) {
+
+        ChangeSet changes = [] as ChangeSet
 
         if (current == prev) {
             return changes
@@ -17,12 +20,12 @@ class JsonDiffer {
             Set<String> keysRemoved = prevFlat.keySet() - currentFlat.keySet()
             Set<String> keysCommon = currentFlat.keySet() - keysAdded
 
-            keysAdded.each{ changes << new JsonDiff(JsonDiff.ADD, it, currentFlat[it]) }
-            keysRemoved.each{ changes << new JsonDiff(JsonDiff.REMOVE, it, prevFlat[it]) }
+            keysAdded.each{ changes << new JsonDiff(ADD, it, currentFlat[it]) }
+            keysRemoved.each{ changes << new JsonDiff(REMOVE, it, prevFlat[it]) }
             keysCommon.each{ String key ->
                 if (currentFlat[key] != prevFlat[key]) {
-                    changes << new JsonDiff(JsonDiff.REMOVE, key, prevFlat[key])
-                    changes << new JsonDiff(JsonDiff.ADD, key, currentFlat[key])
+                    changes << new JsonDiff(REMOVE, key, prevFlat[key])
+                    changes << new JsonDiff(ADD, key, currentFlat[key])
                 }
             }
             return changes
