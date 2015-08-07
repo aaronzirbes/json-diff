@@ -1,0 +1,68 @@
+apply plugin: 'groovy'
+
+targetCompatibility = "1.7"
+sourceCompatibility = "1.7"
+
+group = "org.zirbes.json.diff"
+version = "0.1.0"
+description = "An JSON diff library"
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.3'
+
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.6.0'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.6.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.0'
+    compile 'io.reactivex:rxgroovy:1.0.2'
+
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+}
+
+// code below this can be safely removed if you don't want publish library ever
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
+    }
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'bintray'
+
+publishing {
+    publications {
+        groovyMaven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+// set bintrayUser & bintrayKey in gradle.properties
+bintray {
+
+    user = getPropertyOrUseDefault("bintrayUser", "fake_user")
+    key = getPropertyOrUseDefault("bintrayKey", "fake_key")
+    publications = ['groovyMaven']
+
+    def projectName = project.name
+    def projectDescription = project.description
+
+    pkg {
+        repo = 'maven' // or your repo name
+        name = projectName      // somehow project.* doesn't work in this closure
+        desc = projectDescription
+        licenses = ['Apache-2.0']
+    }
+    dryRun = true // whether to run this as dry-run, without deploying
+}
+
+String getPropertyOrUseDefault(String propertyName, String defaultValue) {
+    hasProperty(propertyName) ? getProperty(propertyName) : defaultValue
+}
